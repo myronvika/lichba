@@ -1,8 +1,13 @@
 import React from 'react';
-
-function Dashboardd() {
+import {UserButton} from "@clerk/nextjs";
+function main() {
     return (
-        <div>Dashboardd</div>
+        <div>
+            <UserButton/>
+        </div>
     )
+
+
 }
-export default Dashboardd;
+
+export default main;
