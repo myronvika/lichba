@@ -3,7 +3,7 @@ import {UserButton} from "@clerk/nextjs";
 function main() {
     return (
         <div>
-            <UserButton/>
+            Dashboard
         </div>
     )
 
