@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
     Dialog,
     DialogClose,
@@ -10,35 +10,41 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog";
-import EmojiPicker from 'emoji-picker-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { db } from '@/utils/dbConfig';
-import { Budgets } from '@/utils/schema';
-import { useUser } from '@clerk/nextjs';
-import { toast } from 'sonner';
-import { eq } from 'drizzle-orm';
+import EmojiPicker from "emoji-picker-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { db } from "@/utils/dbConfig";
+import { Budgets } from "@/utils/schema";
+import { useUser } from "@clerk/nextjs";
+import { toast } from "sonner";
 
 function CreateBudget({ refreshData }) {
-    const [emojiIcon, setEmojiIcon] = useState('😀');
+    const [emojiIcon, setEmojiIcon] = useState("😀");
     const [openEmojiPicker, setOpenEmojiPicker] = useState(false);
-    const [name, setName] = useState('');
-    const [amount, setAmount] = useState('');
+    const [name, setName] = useState("");
+    const [amount, setAmount] = useState("");
     const { user } = useUser();
 
     const onCreateBudget = async () => {
+        const email = user?.primaryEmailAddress?.emailAddress;
+        if (!email) {
+            toast.error("User not authenticated");
+            return;
+        }
+
         try {
-            const result = await db.insert(Budgets)
+            const result = await db
+                .insert(Budgets)
                 .values({
                     name,
                     amount: parseFloat(amount),
-                    createdBy: user?.primaryEmailAddress?.emailAddress,
-                    icon: emojiIcon
+                    createdBy: email,
+                    icon: emojiIcon,
                 })
                 .returning({ insertedId: Budgets.id });
 
             if (result) {
-                toast.success('✅ New Budget Created!');
+                toast.success("✅ Budget created!");
                 refreshData?.();
             }
         } catch (error) {
@@ -51,10 +57,8 @@ function CreateBudget({ refreshData }) {
         <div>
             <Dialog>
                 <DialogTrigger asChild>
-                    <div className='bg-slate-100 p-10 rounded-md
-          items-center flex flex-col border-2 border-dashed
-          cursor-pointer hover:shadow-md'>
-                        <h2 className='text-3xl'>+</h2>
+                    <div className="bg-slate-100 p-10 rounded-md items-center flex flex-col border-2 border-dashed cursor-pointer hover:shadow-md">
+                        <h2 className="text-3xl">+</h2>
                         <h2>Create New Budget</h2>
                     </div>
                 </DialogTrigger>
@@ -67,7 +71,8 @@ function CreateBudget({ refreshData }) {
                         </DialogDescription>
                     </DialogHeader>
 
-                    <div className='mt-5'>
+                    {/* Весь інший контент - поза <DialogDescription> */}
+                    <div className="mt-5">
                         <Button
                             variant="outline"
                             className="text-lg"
@@ -77,7 +82,7 @@ function CreateBudget({ refreshData }) {
                         </Button>
 
                         {openEmojiPicker && (
-                            <div className="absolute z-20 w-[300px] h-[500px] overflow-hidden">
+                            <div className="absolute z-20 w-[350px] h-[400px] overflow-hidden">
                                 <EmojiPicker
                                     height={400}
                                     width={300}
@@ -89,13 +94,16 @@ function CreateBudget({ refreshData }) {
                             </div>
                         )}
 
-                        <div className='mt-4'>
-                            <label className='text-black font-medium my-1 block'>Budget Name</label>
-                            <Input placeholder="e.g. Home Decor" onChange={(e) => setName(e.target.value)} />
+                        <div className="mt-4">
+                            <label className="text-black font-medium my-1 block">Budget Name</label>
+                            <Input
+                                placeholder="e.g. Home Decor"
+                                onChange={(e) => setName(e.target.value)}
+                            />
                         </div>
 
-                        <div className='mt-4'>
-                            <label className='text-black font-medium my-1 block'>Budget Amount</label>
+                        <div className="mt-4">
+                            <label className="text-black font-medium my-1 block">Budget Amount</label>
                             <Input
                                 type="number"
                                 placeholder="e.g. 5000$"
