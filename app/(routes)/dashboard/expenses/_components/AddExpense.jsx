@@ -17,22 +17,30 @@ function AddExpense({ budgetId, user, refreshData }) {
      */
     const addNewExpense = async () => {
         setLoading(true)
+        // валідація кількості
+        const parsedAmount = parseFloat(amount)
+        if (isNaN(parsedAmount)) {
+            toast('Invalid amount format: enter a number', { variant: 'error' })
+            setLoading(false)
+            return
+        }
+
         const result = await db.insert(Expenses).values({
-            name: name,
-            amount: amount,
-            budgetId: budgetId,
+            name,
+            amount: parsedAmount,
+            budgetId,
             createdAt: moment().format('DD/MM/yyy')
         }).returning({ insertedId: Budgets.id });
 
-        setAmount('');
-        setName('');
+        setAmount('')
+        setName('')
         if (result) {
-            setLoading(false)
             refreshData()
             toast('New Expense Added!')
         }
-        setLoading(false);
+        setLoading(false)
     }
+
     return (
         <div className='border p-5 rounded-lg'>
             <h2 className='font-bold text-lg'>Add Expense</h2>

@@ -1,3 +1,4 @@
+'use client'
 import { PiggyBank, ReceiptText, Wallet } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
 
