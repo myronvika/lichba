@@ -47,7 +47,7 @@ function EditBudget({ budgetInfo, refreshData }) {
 
         if (result) {
             refreshData()
-            toast('Budget Updated!')
+            toast('Конверт оновлено!')
         }
     }
 
@@ -61,9 +61,9 @@ function EditBudget({ budgetInfo, refreshData }) {
                 </DialogTrigger>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Update Budget</DialogTitle>
+                        <DialogTitle>Оновити конверт</DialogTitle>
                         <DialogDescription>
-                            You can update the name, amount, or icon of your budget.
+                            Ви можете змінити назву, суму або іконку вашого конверту.
                         </DialogDescription>
                     </DialogHeader>
 
@@ -86,9 +86,9 @@ function EditBudget({ budgetInfo, refreshData }) {
                         </div>
 
                         <div className='mt-2'>
-                            <h2 className='text-black font-medium my-1'>Budget Name</h2>
+                            <h2 className='text-black font-medium my-1'>Назва конверу</h2>
                             <Input
-                                placeholder="e.g. Home Decor"
+                                placeholder="напр. декор для спальні"
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
                             />
@@ -98,7 +98,7 @@ function EditBudget({ budgetInfo, refreshData }) {
                             <h2 className='text-black font-medium my-1'>Budget Amount</h2>
                             <Input
                                 type="number"
-                                placeholder="e.g. 5000$"
+                                placeholder="напр. 5000$"
                                 value={amount}
                                 onChange={(e) => setAmount(e.target.value)}
                             />

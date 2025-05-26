@@ -11,15 +11,12 @@ import {
 } from 'recharts'
 
 export default function BarChartDashboard({ budgetList }) {
-    // 1) Инициализируем пустой массив, затем заполняем всеми id после загрузки budgetList
     const [selectedIds, setSelectedIds] = useState([])
 
-    // 2) Когда budgetList обновится, по-умолчанию отмечаем все бюджеты
     useEffect(() => {
         setSelectedIds(budgetList.map(b => b.id))
     }, [budgetList])
 
-    // 3) Состояние открытия/закрытия дропдауна
     const [open, setOpen] = useState(false)
     const ref = useRef(null)
     useEffect(() => {
@@ -32,13 +29,11 @@ export default function BarChartDashboard({ budgetList }) {
         return () => document.removeEventListener('mousedown', onClickOutside)
     }, [])
 
-    // 4) Переключаем выбранный id
     const toggle = id =>
         setSelectedIds(ids =>
             ids.includes(id) ? ids.filter(x => x !== id) : [...ids, id]
         )
 
-    // 5) Генерируем данные только для выбранных бюджетов
     const data = useMemo(
         () =>
             budgetList

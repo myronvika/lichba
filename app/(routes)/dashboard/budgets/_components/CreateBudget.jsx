@@ -28,7 +28,7 @@ function CreateBudget({ refreshData }) {
     const onCreateBudget = async () => {
         const email = user?.primaryEmailAddress?.emailAddress;
         if (!email) {
-            toast.error("User not authenticated");
+            toast.error("Користувача не авторизовано");
             return;
         }
 
@@ -44,12 +44,12 @@ function CreateBudget({ refreshData }) {
                 .returning({ insertedId: Budgets.id });
 
             if (result) {
-                toast.success("✅ Budget created!");
+                toast.success("✅ Конверт створено");
                 refreshData?.();
             }
         } catch (error) {
-            console.error("Error creating budget:", error);
-            toast.error("❌ Failed to create budget");
+            console.error("Не вдалось створити конверт:", error);
+            toast.error("❌ Не вдалось створити конверт");
         }
     };
 
@@ -59,15 +59,15 @@ function CreateBudget({ refreshData }) {
                 <DialogTrigger asChild>
                     <div className="bg-slate-100 p-10 rounded-md items-center flex flex-col border-2 border-dashed cursor-pointer hover:shadow-md">
                         <h2 className="text-3xl">+</h2>
-                        <h2>Create New Budget</h2>
+                        <h2>Створити новий конверт</h2>
                     </div>
                 </DialogTrigger>
 
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Create New Budget</DialogTitle>
+                        <DialogTitle>Створити новий конверт</DialogTitle>
                         <DialogDescription>
-                            Choose an emoji and enter your budget details.
+                            Оберіть емодзі та введіть дані про свій конверт.
                         </DialogDescription>
                     </DialogHeader>
 
@@ -97,16 +97,16 @@ function CreateBudget({ refreshData }) {
                         <div className="mt-4">
                             <label className="text-black font-medium my-1 block">Budget Name</label>
                             <Input
-                                placeholder="e.g. Home Decor"
+                                placeholder="напр. Відпочинок"
                                 onChange={(e) => setName(e.target.value)}
                             />
                         </div>
 
                         <div className="mt-4">
-                            <label className="text-black font-medium my-1 block">Budget Amount</label>
+                            <label className="text-black font-medium my-1 block">Сума конверту</label>
                             <Input
                                 type="number"
-                                placeholder="e.g. 5000$"
+                                placeholder="напр. 5000₴"
                                 onChange={(e) => setAmount(e.target.value)}
                             />
                         </div>

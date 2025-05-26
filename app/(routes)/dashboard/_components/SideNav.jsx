@@ -1,44 +1,43 @@
 import React, { useEffect } from 'react'
 import Image from "next/image";
-import {LayoutGrid,PiggyBank,ReceiptText, ClipboardList, Mail} from 'lucide-react'
+import {LayoutGrid,PiggyBank,ReceiptText, ClipboardList, Mail, TrendingUp} from 'lucide-react'
 import { UserButton } from '@clerk/nextjs';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
+
 function SideNav() {
     const menuList=[
         {
             id:1,
-            name:'Dashboard',
+            name:'Інформаційна панель',
             icon:LayoutGrid,
             path:'/dashboard'
         },
         {
             id:2,
-            name:'Budgets',
+            name:'Конверти',
             icon:PiggyBank,
             path:'/dashboard/budgets'
-
         },
         {
             id:3,
-            name:'Expenses',
+            name:'Витрати',
             icon:ReceiptText,
             path:'/dashboard/expenses'
-
         },
         {
             id:4,
-            name:'Contacts',
-            icon:Mail,
-            path:'/dashboard/contact'
-
-        }
+            name:'Доходи',
+            icon:TrendingUp,
+            path:'/dashboard/income'
+        },
     ]
     const path=usePathname();
 
     useEffect(()=>{
         console.log(path)
     },[path])
+
     return (
         <div className='h-screen p-5 border shadow-sm'>
             <div className='mt-5'>
@@ -57,8 +56,7 @@ function SideNav() {
                     </Link>
                 ))}
             </div>
-            <div className='fixed bottom-10 p-5 flex gap-2
-            items-center'>
+            <div className='fixed bottom-10 p-5 flex gap-2 items-center'>
                 <UserButton/>
                 Profile
             </div>

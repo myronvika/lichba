@@ -12,19 +12,19 @@ function ExpenseListTable({ expensesList, refreshData }) {
             .returning()
 
         if (result) {
-            toast('Expense Deleted!')
+            toast('Витрату видалено!')
             refreshData()
         }
     }
 
     return (
         <div className='mt-3'>
-            <h2 className='font-bold text-lg'>Latest Expenses</h2>
+            <h2 className='font-bold text-lg'>Останні витрати</h2>
             <div className='grid grid-cols-4 bg-slate-200 p-2 mt-3'>
-                <h2 className='font-bold'>Name</h2>
-                <h2 className='font-bold'>Amount</h2>
-                <h2 className='font-bold'>Date</h2>
-                <h2 className='font-bold'>Action</h2>
+                <h2 className='font-bold'>Назва</h2>
+                <h2 className='font-bold'>Сума</h2>
+                <h2 className='font-bold'>Дата</h2>
+                <h2 className='font-bold'>Дія</h2>
             </div>
 
             {expensesList.map((expenses) => (

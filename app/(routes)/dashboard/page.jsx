@@ -9,7 +9,8 @@ import { desc, eq, getTableColumns, sql } from 'drizzle-orm'
 import { Budgets, Expenses } from '@/utils/schema'
 import BarChartDashboard from './_components/BarChartDashboard'
 import BudgetItem from './budgets/_components/BudgetItem'
-import ExpenseListTable from './expenses/_components/ExpenseListTable'
+import TransactionsList from './_components/TransactionsList'
+
 
 export default function Dashboard() {
     const { user } = useUser()
@@ -18,8 +19,8 @@ export default function Dashboard() {
     const [budgetList, setBudgetList] = useState([])
     // Останні 4 бюджети для секції Latest Budgets
     const [latestBudgets, setLatestBudgets] = useState([])
-    // Останні 5 витрат
-    const [expensesList, setExpensesList] = useState([])
+    // ✅ ЗМІНЕНО: Останні 5 транзакцій
+    const [transactionsList, setTransactionsList] = useState([])
 
     useEffect(() => {
         if (user) getBudgetList()
@@ -37,27 +38,29 @@ export default function Dashboard() {
             .leftJoin(Expenses, eq(Budgets.id, Expenses.budgetId))
             .where(eq(Budgets.createdBy, user.primaryEmailAddress.emailAddress))
             .groupBy(Budgets.id)
-            .orderBy(desc(Budgets.id))  // без .limit — отримаємо всі
+            .orderBy(desc(Budgets.id))
         setBudgetList(all)
-        setLatestBudgets(all.slice(0, 4))  // тільки 4 перші
-        getAllExpenses()
+        setLatestBudgets(all.slice(0, 4))
+        getAllTransactions() // ✅ ЗМІНЕНО: перейменована функція
     }
 
-    // Завантажуємо 5 останніх витрат
-    const getAllExpenses = async () => {
+    // ✅ ЗМІНЕНО: Завантажуємо 5 останніх транзакцій
+    const getAllTransactions = async () => {
         const recent = await db
             .select({
                 id:        Expenses.id,
                 name:      Expenses.name,
                 amount:    Expenses.amount,
                 createdAt: Expenses.createdAt,
+                budgetName: Budgets.name, // ✅ ДОДАНО для визначення типу
+                budgetIcon: Budgets.icon, // ✅ ДОДАНО для іконки
             })
             .from(Expenses)
             .innerJoin(Budgets, eq(Expenses.budgetId, Budgets.id))
             .where(eq(Budgets.createdBy, user.primaryEmailAddress.emailAddress))
             .orderBy(desc(Expenses.id))
             .limit(5)
-        setExpensesList(recent)
+        setTransactionsList(recent) // ✅ ВИПРАВЛЕНО
     }
 
     return (
@@ -70,11 +73,11 @@ export default function Dashboard() {
             <CardInfo budgetList={budgetList} />
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 mt-6">
-                {/* Activity + Latest Expenses */}
+                {/* Activity + Latest Transactions */}
                 <div className="lg:col-span-2 space-y-6">
                     <BarChartDashboard budgetList={budgetList} />
-                    <ExpenseListTable
-                        expensesList={expensesList}
+                    <TransactionsList
+                        transactionsList={transactionsList}
                         refreshData={getBudgetList}
                     />
                 </div>
