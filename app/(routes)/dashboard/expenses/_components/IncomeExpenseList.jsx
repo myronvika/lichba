@@ -1,13 +1,14 @@
+// app/(routes)/dashboard/expenses/_components/IncomeExpenseList.jsx
 import { db } from '@/utils/dbConfig'
 import { Expenses, Income, Budgets } from '@/utils/schema'
 import { eq } from 'drizzle-orm'
 import { Trash, ArrowUp, ArrowDown } from 'lucide-react'
 import React from 'react'
 import { toast } from 'sonner'
+
 function IncomeExpenseList({ budgetId, incomeList, expensesList, refreshData }) {
 
     const deleteExpense = async (expense) => {
-
         // ✅ ЗАЛИШИЛИ ТІЛЬКИ ВИДАЛЕННЯ EXPENSE
         const result = await db.delete(Expenses)
             .where(eq(Expenses.id, expense.id))
@@ -18,24 +19,42 @@ function IncomeExpenseList({ budgetId, incomeList, expensesList, refreshData }) 
             refreshData() // Це автоматично пересчитає totalSpend
         }
     }
-    const deleteIncome = async (income) => {
 
+    const deleteIncome = async (income) => {
         // ✅ ЗАЛИШИЛИ ТІЛЬКИ ВИДАЛЕННЯ INCOME
         const result = await db.delete(Income)
             .where(eq(Income.id, income.id))
             .returning()
 
         if (result) {
-            toast('\n' + 'Запис про дохід видалено!')
+            toast('Запис про дохід видалено!')
             refreshData() // Це автоматично пересчитає totalSpend
         }
     }
 
-    // Об'єднуємо та сортуємо за датою
+    // ✅ ВИПРАВЛЕНО: Правильне сортування за датою створення
     const allTransactions = [
-        ...incomeList.map(item => ({ ...item, type: 'income' })),    // <-- англійське 'income'
-        ...expensesList.map(item => ({ ...item, type: 'expense' }))  // <-- англійське 'expense'
-    ].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        ...incomeList.map(item => ({ ...item, type: 'income' })),
+        ...expensesList.map(item => ({ ...item, type: 'expense' }))
+    ].sort((a, b) => {
+        // Конвертуємо дати у формат для порівняння
+        // Припускаємо формат DD/MM/YYYY
+        const parseDate = (dateStr) => {
+            const [day, month, year] = dateStr.split('/');
+            return new Date(year, month - 1, day);
+        };
+
+        const dateA = parseDate(a.createdAt);
+        const dateB = parseDate(b.createdAt);
+
+        // Сортуємо за датою (новіші спочатку)
+        if (dateA.getTime() !== dateB.getTime()) {
+            return dateB.getTime() - dateA.getTime();
+        }
+
+        // Якщо дати однакові, сортуємо за ID (новіші спочатку)
+        return b.id - a.id;
+    });
 
     return (
         <div className='mt-3'>
