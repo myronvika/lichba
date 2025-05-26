@@ -28,7 +28,7 @@ function ExpensesScreen() {
     }, [user])
 
     /**
-     * Used to get All expenses belong to users
+     * Отримуємо всі витрати користувача
      */
     const getAllExpenses = async() => {
         const result = await db.select({
@@ -52,7 +52,7 @@ function ExpensesScreen() {
     }
 
     /**
-     * Delete expense record and return money to envelope
+     * Видаляємо запис витрати та повертаємо гроші до конверта
      */
     const deleteExpense = async (expense) => {
         try {
@@ -79,12 +79,12 @@ function ExpensesScreen() {
                 .returning();
 
             if (result) {
-                toast('Expense deleted! $' + parseFloat(expense.amount).toFixed(2) + ' returned to envelope.');
+                toast('Витрату видалено! ₴' + parseFloat(expense.amount).toFixed(2) + ' повернено до конверта.');
                 getAllExpenses(); // Оновлюємо список
             }
         } catch (error) {
-            console.error('Error deleting expense:', error);
-            toast('Error deleting expense record', { variant: 'error' });
+            console.error('Помилка видалення витрати:', error);
+            toast('Помилка видалення запису витрати', { variant: 'error' });
         }
     }
 
@@ -95,29 +95,29 @@ function ExpensesScreen() {
                     <ReceiptText className='w-8 h-8 text-red-600' />
                 </div>
                 <div>
-                    <h2 className='font-bold text-3xl text-gray-800'>My Expenses</h2>
-                    <p className='text-gray-600'>Track all your expenses across envelopes</p>
+                    <h2 className='font-bold text-3xl text-gray-800'>Мої витрати</h2>
+                    <p className='text-gray-600'>Відстежуйте всі свої витрати в різних конвертах</p>
                 </div>
             </div>
 
-            {/* Summary Card */}
+            {/* Картка підсумку */}
             <div className='bg-gradient-to-r from-red-500 to-red-600 p-6 rounded-xl text-white mb-6'>
                 <div className='flex items-center justify-between'>
                     <div>
-                        <h3 className='text-lg opacity-90'>Total Expenses</h3>
-                        <p className='text-3xl font-bold'>${totalExpenses.toFixed(2)}</p>
-                        <p className='text-sm opacity-90 mt-1'>{expensesList.length} expense records</p>
+                        <h3 className='text-lg opacity-90'>Загальні витрати</h3>
+                        <p className='text-3xl font-bold'>₴{totalExpenses.toFixed(2)}</p>
+                        <p className='text-sm opacity-90 mt-1'>{expensesList.length} записів витрат</p>
                     </div>
                     <DollarSign className='w-16 h-16 opacity-20' />
                 </div>
             </div>
 
-            {/* Expenses List */}
+            {/* Список витрат */}
             <div className='bg-white rounded-lg shadow-sm border'>
                 <div className='p-4 border-b bg-gray-50 rounded-t-lg'>
                     <h2 className='font-bold text-lg flex items-center gap-2'>
                         <Calendar className='w-5 h-5' />
-                        Expense History
+                        Історія витрат
                     </h2>
                 </div>
 
@@ -128,39 +128,38 @@ function ExpensesScreen() {
                                 key={expense.id}
                                 className='p-4 hover:bg-red-50 transition-colors'
                             >
-                                <div className='flex items-center justify-between'>
-                                    <div className='flex items-center gap-4'>
-                                        {/* Envelope Info */}
-                                        <div className='flex items-center gap-2'>
-                                            <span className='text-2xl'>{expense.budgetIcon}</span>
-                                            <div>
-                                                <p className='font-medium text-gray-800'>{expense.budgetName}</p>
-                                                <p className='text-sm text-gray-500'>Envelope</p>
-                                            </div>
-                                        </div>
-
-                                        {/* Expense Details */}
-                                        <div className='ml-6'>
-                                            <p className='font-medium text-gray-800'>{expense.name}</p>
-                                            <p className='text-sm text-gray-500 flex items-center gap-1'>
-                                                <Calendar className='w-3 h-3' />
-                                                {expense.createdAt}
-                                            </p>
+                                {/* ✅ ФІКСОВАНА СІТКА З ВИЗНАЧЕНИМИ ШИРИНАМИ КОЛОНОК */}
+                                <div className='grid grid-cols-12 gap-4 items-center'>
+                                    {/* Інформація про конверт - 3 колонки */}
+                                    <div className='col-span-3 flex items-center gap-2'>
+                                        <span className='text-2xl'>{expense.budgetIcon}</span>
+                                        <div className='min-w-0'>
+                                            <p className='font-medium text-gray-800 truncate'>{expense.budgetName}</p>
+                                            <p className='text-sm text-gray-500'>Конверт</p>
                                         </div>
                                     </div>
 
-                                    {/* Amount and Actions */}
-                                    <div className='flex items-center gap-4'>
-                                        <div className='text-right'>
-                                            <p className='text-xl font-bold text-red-600'>
-                                                -${parseFloat(expense.amount).toFixed(2)}
-                                            </p>
-                                            <span className='inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800'>
-                                                Spent from Envelope
-                                            </span>
-                                        </div>
+                                    {/* Деталі витрати - 4 колонки */}
+                                    <div className='col-span-4 min-w-0'>
+                                        <p className='font-medium text-gray-800 truncate'>{expense.name}</p>
+                                        <p className='text-sm text-gray-500 flex items-center gap-1'>
+                                            <Calendar className='w-3 h-3 flex-shrink-0' />
+                                            <span className='truncate'>{expense.createdAt}</span>
+                                        </p>
+                                    </div>
 
-                                        {/* Delete Button */}
+                                    {/* Сума - 3 колонки */}
+                                    <div className='col-span-3 text-right'>
+                                        <p className='text-xl font-bold text-red-600'>
+                                            -₴{parseFloat(expense.amount).toFixed(2)}
+                                        </p>
+                                        <span className='inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800'>
+                                            Витрачено з конверта
+                                        </span>
+                                    </div>
+
+                                    {/* Кнопка видалення - 2 колонки */}
+                                    <div className='col-span-2 flex justify-center'>
                                         <AlertDialog>
                                             <AlertDialogTrigger asChild>
                                                 <button className='p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors'>
@@ -169,18 +168,18 @@ function ExpensesScreen() {
                                             </AlertDialogTrigger>
                                             <AlertDialogContent>
                                                 <AlertDialogHeader>
-                                                    <AlertDialogTitle>Delete Expense Record?</AlertDialogTitle>
+                                                    <AlertDialogTitle>Видалити запис витрати?</AlertDialogTitle>
                                                     <AlertDialogDescription>
-                                                        This will delete "{expense.name}" and return ${parseFloat(expense.amount).toFixed(2)} to your "{expense.budgetName}" envelope. This action cannot be undone.
+                                                        Це видалить "{expense.name}" та поверне ₴{parseFloat(expense.amount).toFixed(2)} до вашого конверта "{expense.budgetName}". Цю дію не можна скасувати.
                                                     </AlertDialogDescription>
                                                 </AlertDialogHeader>
                                                 <AlertDialogFooter>
-                                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                    <AlertDialogCancel>Скасувати</AlertDialogCancel>
                                                     <AlertDialogAction
                                                         onClick={() => deleteExpense(expense)}
                                                         className="bg-red-600 hover:bg-red-700"
                                                     >
-                                                        Delete
+                                                        Видалити
                                                     </AlertDialogAction>
                                                 </AlertDialogFooter>
                                             </AlertDialogContent>
@@ -195,10 +194,10 @@ function ExpensesScreen() {
                         <div className='w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4'>
                             <ReceiptText className='w-8 h-8 text-gray-400' />
                         </div>
-                        <h3 className='text-lg font-medium text-gray-800 mb-2'>No expense records yet</h3>
+                        <h3 className='text-lg font-medium text-gray-800 mb-2'>Ще немає записів витрат</h3>
                         <p className='text-gray-500 max-w-md mx-auto'>
-                            Start spending from your envelopes to see expense records here.
-                            Go to any envelope and use the "Spend from Envelope" feature.
+                            Почніть витрачати з ваших конвертів, щоб побачити записи витрат тут.
+                            Перейдіть до будь-якого конверта та скористайтеся функцією "Витратити з конверта".
                         </p>
                     </div>
                 )}

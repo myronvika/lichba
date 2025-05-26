@@ -32,7 +32,7 @@ function IncomeExpenseList({ budgetId, incomeList, expensesList, refreshData }) 
         }
     }
 
-    // ✅ ВИПРАВЛЕНО: Правильне сортування за датою створення
+    // Правильне сортування за датою створення
     const allTransactions = [
         ...incomeList.map(item => ({ ...item, type: 'income' })),
         ...expensesList.map(item => ({ ...item, type: 'expense' }))
@@ -95,7 +95,7 @@ function IncomeExpenseList({ budgetId, incomeList, expensesList, refreshData }) 
                             <h2 className={`font-medium ${
                                 transaction.type === 'income' ? 'text-green-600' : 'text-red-600'
                             }`}>
-                                {transaction.type === 'income' ? '+' : '-'}${parseFloat(transaction.amount).toFixed(2)}
+                                {transaction.type === 'income' ? '+' : '-'}₴{parseFloat(transaction.amount).toFixed(2)}
                             </h2>
                             <h2 className='text-sm text-gray-600'>{transaction.createdAt}</h2>
                             <h2>

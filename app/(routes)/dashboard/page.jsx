@@ -16,7 +16,7 @@ export default function Dashboard() {
 
     // ВСІ бюджети для фільтра у Activity
     const [budgetList, setBudgetList] = useState([])
-    // Останні 4 бюджети для секції Latest Budgets
+    // Останні 4 бюджети для секції Останні Конверти
     const [latestBudgets, setLatestBudgets] = useState([])
     // ✅ ЗМІНЕНО: Останні 10 транзакцій (доходи + витрати)
     const [transactionsList, setTransactionsList] = useState([])
@@ -63,7 +63,7 @@ export default function Dashboard() {
             setLatestBudgets(result.slice(0, 4))
             getAllTransactions()
         } catch (error) {
-            console.error('Error loading budgets:', error)
+            console.error('Помилка завантаження бюджетів:', error)
         }
     }
 
@@ -116,27 +116,36 @@ export default function Dashboard() {
             // Об'єднуємо всі транзакції та сортуємо за датою створення
             const allTransactions = [...expensesWithType, ...incomeWithType]
                 .sort((a, b) => {
-                    // Спочатку сортуємо за ID (новіші спочатку)
-                    if (a.id !== b.id) {
-                        return b.id - a.id;
+                    // Конвертуємо дати у формат для порівняння
+                    // Припускаємо формат DD/MM/YYYY
+                    const parseDate = (dateStr) => {
+                        const [day, month, year] = dateStr.split('/');
+                        return new Date(year, month - 1, day);
+                    };
+
+                    const dateA = parseDate(a.createdAt);
+                    const dateB = parseDate(b.createdAt);
+
+                    // Сортуємо за датою (новіші спочатку)
+                    if (dateA.getTime() !== dateB.getTime()) {
+                        return dateB.getTime() - dateA.getTime();
                     }
-                    // Якщо ID однакові, сортуємо за типом (доходи спочатку)
-                    if (a.type === 'income' && b.type === 'expense') return -1;
-                    if (a.type === 'expense' && b.type === 'income') return 1;
-                    return 0;
+
+                    // Якщо дати однакові, сортуємо за ID (новіші спочатку)
+                    return b.id - a.id;
                 })
                 .slice(0, 10) // Беремо останні 10 транзакцій
 
-            console.log('All transactions:', allTransactions); // Для дебагу
+            console.log('Всі транзакції:', allTransactions); // Для дебагу
             setTransactionsList(allTransactions)
         } catch (error) {
-            console.error('Error loading transactions:', error)
+            console.error('Помилка завантаження транзакцій:', error)
         }
     }
 
     return (
         <div className="p-8">
-            <h2 className="font-bold text-4xl">Hi, {user?.fullName} ✌️</h2>
+            <h2 className="font-bold text-4xl">Привіт, {user?.fullName} ✌️</h2>
             <p className="text-gray-500 mb-8">
                 Ось що відбувається з вашими фінансами. Давайте керувати вашими витратами!
             </p>
@@ -144,7 +153,7 @@ export default function Dashboard() {
             <CardInfo budgetList={budgetList} />
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 mt-6">
-                {/* Activity + Latest Transactions */}
+                {/* Активність + Останні Транзакції */}
                 <div className="lg:col-span-2 space-y-6">
                     <BarChartDashboard budgetList={budgetList} />
                     <TransactionsList
@@ -153,9 +162,9 @@ export default function Dashboard() {
                     />
                 </div>
 
-                {/* Latest Budgets (тільки 4) */}
+                {/* Останні Конверти (тільки 4) */}
                 <div className="space-y-4">
-                    <h2 className="font-bold text-lg">Latest Budgets</h2>
+                    <h2 className="font-bold text-lg">Останні конверти</h2>
                     {latestBudgets.length > 0 ? (
                         latestBudgets.map(b => (
                             <BudgetItem key={b.id} budget={b} />

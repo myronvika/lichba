@@ -13,33 +13,41 @@ function BudgetItem({ budget }) {
         return originalAmount + totalIncome - totalSpend;
     };
 
-    const calculateProgressPerc = () => {
-        const originalAmount = parseFloat(budget.amount) || 0;
-        const totalSpend = budget.totalSpend || 0;
-
-        if (originalAmount === 0) return 0;
-
-        // Відсоток витрат від початкового бюджету
-        const spentPercentage = (totalSpend / originalAmount) * 100;
-        return spentPercentage > 100 ? 100 : spentPercentage.toFixed(2);
-    };
-
-    const getProgressColor = () => {
+    // Розраховуємо відсоток залишку (а не витрат)
+    const calculateBalancePercentage = () => {
         const currentBalance = calculateCurrentBalance();
         const originalAmount = parseFloat(budget.amount) || 0;
+        const totalIncome = budget.totalIncome || 0;
 
-        if (currentBalance < 0) {
-            return 'bg-red-500'; // Червоний якщо перевищено бюджет
-        } else if (currentBalance < originalAmount * 0.2) {
+        // Загальна доступна сума = початковий бюджет + доходи
+        const totalAvailable = originalAmount + totalIncome;
+
+        if (totalAvailable === 0) return 0;
+
+        // Відсоток залишку від загальної доступної суми
+        const balancePercentage = (currentBalance / totalAvailable) * 100;
+
+        // Обмежуємо від 0% до 100%
+        return Math.max(0, Math.min(100, balancePercentage));
+    };
+
+    // Колір залежно від залишку
+    const getProgressColor = () => {
+        const balancePercentage = calculateBalancePercentage();
+
+        if (balancePercentage <= 0) {
+            return 'bg-red-500'; // Червоний якщо коштів немає
+        } else if (balancePercentage <= 20) {
             return 'bg-orange-500'; // Помаранчевий якщо залишилось менше 20%
-        } else if (currentBalance < originalAmount * 0.5) {
+        } else if (balancePercentage <= 50) {
             return 'bg-yellow-500'; // Жовтий якщо залишилось менше 50%
         }
-        return 'bg-primary'; // Стандартний колір
+        return 'bg-primary'; // Стандартний колір (синій/зелений)
     };
 
     const currentBalance = calculateCurrentBalance();
     const originalAmount = parseFloat(budget.amount) || 0;
+    const balancePercentage = calculateBalancePercentage();
 
     return (
         <Link href={'/dashboard/expenses/' + budget?.id}>
@@ -56,39 +64,46 @@ function BudgetItem({ budget }) {
                     </div>
                     {/* Початковий бюджет (незмінний) */}
                     <h2 className='font-bold text-primary text-lg'>
-                        ${originalAmount.toFixed(2)}
+                        {originalAmount.toFixed()}₴
                     </h2>
                 </div>
 
                 <div className='mt-5'>
                     <div className='flex items-center justify-between mb-3'>
-                        <h2 className='text-xs text-slate-400'>
-                            ${budget.totalSpend?.toFixed(2) || '0.00'} витрачено
-                        </h2>
+                        {/*/!* ✅ ДОДАНО: Показуємо витрачену суму *!/*/}
+                        {/*<h2 className='text-xs text-slate-400'>*/}
+                        {/*    {budget.totalSpend?.toFixed(2) || '0.00'}₴ витрачено*/}
+                        {/*</h2>*/}
                         <h2 className={`text-xs font-semibold ${
                             currentBalance < 0 ? 'text-red-600' : 'text-slate-400'
                         }`}>
-                            ${currentBalance.toFixed(2)} залишилось
+                            {currentBalance.toFixed(2)}₴ залишилось
                         </h2>
                     </div>
 
-                    {/* Показуємо доходи якщо є */}
-                    {budget.totalIncome > 0 && (
-                        <div className='flex items-center justify-center mb-2'>
-                            <span className='text-xs text-green-600 font-medium'>
-                                +${budget.totalIncome?.toFixed(2) || '0.00'} доходи
-                            </span>
-                        </div>
-                    )}
+                    {/*/!* ✅ ДОДАНО: Показуємо доходи якщо вони є *!/*/}
+                    {/*{budget.totalIncome > 0 && (*/}
+                    {/*    <div className='flex items-center justify-center mb-2'>*/}
+                    {/*        <span className='text-xs text-green-600 font-medium'>*/}
+                    {/*            +{budget.totalIncome?.toFixed(2) || '0.00'}₴ доходи*/}
+                    {/*        </span>*/}
+                    {/*    </div>*/}
+                    {/*)}*/}
 
-                    {/* Прогрес бар */}
-                    <div className='w-full bg-slate-300 h-2 rounded-full'>
+                    {/* ✅ ВИПРАВЛЕНО: Прогрес бар показує залишок коштів */}
+                    <div className='w-full bg-slate-300 h-2 rounded-full relative'>
                         <div
                             className={`h-2 rounded-full transition-all duration-300 ${getProgressColor()}`}
                             style={{
-                                width: `${calculateProgressPerc()}%`
+                                width: `${balancePercentage}%`
                             }}
                         />
+                        {/* ✅ ДОДАНО: Показуємо відсоток для кращого розуміння */}
+                        {/*<div className='text-center mt-1'>*/}
+                        {/*    <span className='text-xs text-gray-500'>*/}
+                        {/*        {balancePercentage.toFixed(0)}% залишилось*/}
+                        {/*    </span>*/}
+                        {/*</div>*/}
                     </div>
                 </div>
             </div>

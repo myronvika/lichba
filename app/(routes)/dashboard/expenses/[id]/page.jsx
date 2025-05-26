@@ -36,7 +36,7 @@ function ExpensesScreen({ params }) {
         user && getBudgetInfo();
     }, [user]);
 
-    // ✅ ВИПРАВЛЕНО: Додано отримання totalIncome
+    // Додано отримання totalIncome
     const getBudgetInfo = async () => {
         try {
             // Отримуємо бюджет з витратами
@@ -47,7 +47,7 @@ function ExpensesScreen({ params }) {
             }).from(Budgets)
                 .leftJoin(Expenses, eq(Budgets.id, Expenses.budgetId))
                 .where(eq(Budgets.createdBy, user?.primaryEmailAddress?.emailAddress))
-                .where(eq(Budgets.id, parseInt(id))) // ✅ ВИПРАВЛЕНО: додано parseInt
+                .where(eq(Budgets.id, parseInt(id)))
                 .groupBy(Budgets.id);
 
             if (result.length === 0) {
@@ -56,13 +56,13 @@ function ExpensesScreen({ params }) {
                 return;
             }
 
-            // ✅ ДОДАНО: Окремо отримуємо доходи
+            // Окремо отримуємо доходи
             const incomeData = await db.select({
                 totalIncome: sql`COALESCE(sum(${Income.amount}), 0)`.mapWith(Number)
             }).from(Income)
                 .where(eq(Income.budgetId, parseInt(id)));
 
-            // ✅ ВИПРАВЛЕНО: Об'єднуємо дані з доходами
+            // Об'єднуємо дані з доходами
             const budgetWithIncome = {
                 ...result[0],
                 totalIncome: incomeData.length > 0 ? incomeData[0].totalIncome : 0
@@ -81,7 +81,7 @@ function ExpensesScreen({ params }) {
     const getExpensesList = async () => {
         try {
             const result = await db.select().from(Expenses)
-                .where(eq(Expenses.budgetId, parseInt(id))) // ✅ ВИПРАВЛЕНО: додано parseInt
+                .where(eq(Expenses.budgetId, parseInt(id)))
                 .orderBy(desc(Expenses.id));
             setExpensesList(result);
         } catch (error) {
@@ -92,7 +92,7 @@ function ExpensesScreen({ params }) {
     const getIncomeList = async () => {
         try {
             const result = await db.select().from(Income)
-                .where(eq(Income.budgetId, parseInt(id))) // ✅ ВИПРАВЛЕНО: додано parseInt
+                .where(eq(Income.budgetId, parseInt(id)))
                 .orderBy(desc(Income.id));
             setIncomeList(result);
         } catch (error) {
@@ -104,15 +104,15 @@ function ExpensesScreen({ params }) {
         try {
             // Видаляємо всі доходи
             await db.delete(Income)
-                .where(eq(Income.budgetId, parseInt(id))); // ✅ ВИПРАВЛЕНО: додано parseInt
+                .where(eq(Income.budgetId, parseInt(id)));
 
             // Видаляємо всі витрати
             await db.delete(Expenses)
-                .where(eq(Expenses.budgetId, parseInt(id))); // ✅ ВИПРАВЛЕНО: додано parseInt
+                .where(eq(Expenses.budgetId, parseInt(id)));
 
             // Видаляємо бюджет
             await db.delete(Budgets)
-                .where(eq(Budgets.id, parseInt(id))); // ✅ ВИПРАВЛЕНО: додано parseInt
+                .where(eq(Budgets.id, parseInt(id)));
 
             toast.success('Конверт видалено!');
             route.replace('/dashboard/budgets');

@@ -7,7 +7,7 @@ import {Toaster as SonnerToaster} from 'sonner'
 const inter = Inter({subsets: ['latin']})
 
 export const metadata = {
-    title: 'MyEnvelopes',
+    title: 'Lichba',
     description: 'Особистий трекер витрат',
 }
 

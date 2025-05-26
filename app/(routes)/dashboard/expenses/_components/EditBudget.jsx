@@ -95,10 +95,10 @@ function EditBudget({ budgetInfo, refreshData }) {
                         </div>
 
                         <div className='mt-2'>
-                            <h2 className='text-black font-medium my-1'>Budget Amount</h2>
+                            <h2 className='text-black font-medium my-1'>Сума конверта</h2>
                             <Input
                                 type="number"
-                                placeholder="напр. 5000$"
+                                placeholder="напр. 5000₴"
                                 value={amount}
                                 onChange={(e) => setAmount(e.target.value)}
                             />

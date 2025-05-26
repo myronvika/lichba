@@ -53,13 +53,13 @@ function AddExpense({ budgetId, user, refreshData }) {
             return initialAmount + totalIncome - totalExpenses;
 
         } catch (error) {
-            console.error('Error calculating current balance:', error);
+            console.error('Помилка при розрахунку поточного балансу:', error);
             return 0;
         }
     };
 
     /**
-     * Used to Add Money to Envelope
+     * Додавання грошей до конверта
      */
     const addMoneyToEnvelope = async () => {
         setLoading(true);
@@ -67,7 +67,7 @@ function AddExpense({ budgetId, user, refreshData }) {
 
         const parsedAmount = parseFloat(addAmount);
         if (isNaN(parsedAmount) || parsedAmount <= 0) {
-            toast('Invalid amount format: enter a positive number', { variant: 'error' });
+            toast('Невірний формат суми: введіть позитивне число', { variant: 'error' });
             setLoading(false);
             setIncomeAnimation(false);
             return;
@@ -81,7 +81,7 @@ function AddExpense({ budgetId, user, refreshData }) {
                 .limit(1);
 
             if (budgetCheck.length === 0) {
-                toast('Budget not found', { variant: 'error' });
+                toast('Конверт не знайдено', { variant: 'error' });
                 setLoading(false);
                 setIncomeAnimation(false);
                 return;
@@ -89,7 +89,7 @@ function AddExpense({ budgetId, user, refreshData }) {
 
             // Додаємо запис доходу (БЕЗ оновлення Budgets.amount)
             await db.insert(Income).values({
-                name: incomeName || 'Income',
+                name: incomeName || 'Дохід',
                 amount: parsedAmount,
                 budgetId,
                 createdAt: moment().format('DD/MM/YYYY')
@@ -101,11 +101,11 @@ function AddExpense({ budgetId, user, refreshData }) {
             setAddAmount('');
             setIncomeName('');
             refreshData();
-            toast(`$${parsedAmount} added to envelope! New balance: $${newBalance.toFixed(2)}`);
+            toast(`${parsedAmount}₴ додано до конверта! Новий баланс: ${newBalance.toFixed(2)}₴`);
 
         } catch (error) {
-            console.error('Error adding money:', error);
-            toast('Error adding money to envelope', { variant: 'error' });
+            console.error('Помилка додавання грошей:', error);
+            toast('Помилка додавання грошей до конверта', { variant: 'error' });
         }
 
         setTimeout(() => {
@@ -115,7 +115,7 @@ function AddExpense({ budgetId, user, refreshData }) {
     };
 
     /**
-     * Used to Add New Expense
+     * Додавання нової витрати
      */
     const addNewExpense = async () => {
         setLoading(true);
@@ -123,7 +123,7 @@ function AddExpense({ budgetId, user, refreshData }) {
 
         const parsedAmount = parseFloat(amount);
         if (isNaN(parsedAmount) || parsedAmount <= 0) {
-            toast('Invalid amount format: enter a positive number', { variant: 'error' });
+            toast('Невірний формат суми: введіть позитивне число', { variant: 'error' });
             setLoading(false);
             setExpenseAnimation(false);
             return;
@@ -138,7 +138,7 @@ function AddExpense({ budgetId, user, refreshData }) {
                 .limit(1);
 
             if (budgetCheck.length === 0) {
-                toast('Budget not found', { variant: 'error' });
+                toast('Конверт не знайдено', { variant: 'error' });
                 setLoading(false);
                 setExpenseAnimation(false);
                 return;
@@ -148,7 +148,7 @@ function AddExpense({ budgetId, user, refreshData }) {
             const currentBalance = await getCurrentBalance(budgetId);
 
             if (currentBalance < parsedAmount) {
-                toast(`Not enough funds in envelope! Current balance: $${currentBalance.toFixed(2)}`, { variant: 'error' });
+                toast(`Недостатньо коштів у конверті! Поточний баланс: ${currentBalance.toFixed(2)}₴`, { variant: 'error' });
                 setLoading(false);
                 setExpenseAnimation(false);
                 return;
@@ -168,11 +168,11 @@ function AddExpense({ budgetId, user, refreshData }) {
                 setAmount('');
                 setName('');
                 refreshData();
-                toast(`Expense added! $${parsedAmount} withdrawn from envelope. Remaining: $${newBalance.toFixed(2)}`);
+                toast(`Витрату додано! ${parsedAmount}₴ списано з конверта. Залишилось: ${newBalance.toFixed(2)}₴`);
             }
         } catch (error) {
-            console.error('Error adding expense:', error);
-            toast('Error adding expense', { variant: 'error' });
+            console.error('Помилка додавання витрати:', error);
+            toast('Помилка додавання витрати', { variant: 'error' });
         }
 
         setTimeout(() => {
@@ -183,26 +183,26 @@ function AddExpense({ budgetId, user, refreshData }) {
 
     return (
         <div className='border p-5 rounded-lg'>
-            <h2 className='font-bold text-lg'>Envelope Management</h2>
+            <h2 className='font-bold text-lg'>Управління конвертом</h2>
 
-            {/* Add Money Section */}
+            {/* Секція додавання грошей */}
             <div className='mb-6 p-4 bg-green-50 rounded-lg border border-green-200 relative'>
                 <h3 className='font-medium text-green-800 mb-2 flex items-center gap-2'>
-                    Add Money to Envelope
+                    Додати гроші до конверта
                     <ArrowUp className={`w-4 h-4 transition-all duration-500 ${
                         incomeAnimation ? 'animate-bounce text-green-600' : 'text-green-400'
                     }`} />
                 </h3>
                 <div className='space-y-2'>
                     <Input
-                        placeholder="Income description (optional)"
+                        placeholder="Опис доходу (необов'язково)"
                         value={incomeName}
                         onChange={(e) => setIncomeName(e.target.value)}
                         className="w-full"
                     />
                     <div className='flex gap-2'>
                         <Input
-                            placeholder="e.g. 500"
+                            placeholder="напр. 500"
                             type="number"
                             value={addAmount}
                             onChange={(e) => setAddAmount(e.target.value)}
@@ -213,29 +213,29 @@ function AddExpense({ budgetId, user, refreshData }) {
                             onClick={() => addMoneyToEnvelope()}
                             className="bg-green-600 hover:bg-green-700"
                         >
-                            {loading ? <Loader className="animate-spin" /> : "Add Money"}
+                            {loading ? <Loader className="animate-spin" /> : "Додати гроші"}
                         </Button>
                     </div>
                 </div>
             </div>
 
-            {/* Spend Money Section */}
+            {/* Секція витрат */}
             <div className='p-4 bg-red-50 rounded-lg border border-red-200 relative'>
                 <h3 className='font-medium text-red-800 mb-2 flex items-center gap-2'>
-                    Spend from Envelope
+                    Витратити з конверта
                     <ArrowDown className={`w-4 h-4 transition-all duration-500 ${
                         expenseAnimation ? 'animate-bounce text-red-600' : 'text-red-400'
                     }`} />
                 </h3>
                 <div className='mt-2'>
-                    <h2 className='text-black font-medium my-1'>Expense Name</h2>
-                    <Input placeholder="e.g. Bedroom Decor"
+                    <h2 className='text-black font-medium my-1'>Назва витрати</h2>
+                    <Input placeholder="напр. Декор для спальні"
                            value={name}
                            onChange={(e) => setName(e.target.value)} />
                 </div>
                 <div className='mt-2'>
-                    <h2 className='text-black font-medium my-1'>Expense Amount</h2>
-                    <Input placeholder="e.g. 1000"
+                    <h2 className='text-black font-medium my-1'>Сума витрати</h2>
+                    <Input placeholder="напр. 1000"
                            type="number"
                            value={amount}
                            onChange={(e) => setAmount(e.target.value)} />
@@ -244,7 +244,7 @@ function AddExpense({ budgetId, user, refreshData }) {
                         onClick={() => addNewExpense()}
                         className="mt-3 w-full bg-red-600 hover:bg-red-700">
                     {loading ?
-                        <Loader className="animate-spin" /> : "Spend from Envelope"
+                        <Loader className="animate-spin" /> : "Витратити з конверта"
                     }
                 </Button>
             </div>

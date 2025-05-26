@@ -49,11 +49,11 @@ function BudgetList() {
                 };
             });
 
-            console.log('Budget list with income:', result);
+            console.log('Cписок конвертів з доходами:', result);
             setBudgetList(result);
 
         } catch (error) {
-            console.error('Error fetching budget list:', error);
+            console.error('Помилка при завантаженні конвертів:', error);
             setBudgetList([]);
         }
     }

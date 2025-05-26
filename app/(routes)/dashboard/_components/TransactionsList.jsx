@@ -8,7 +8,7 @@ import { toast } from 'sonner'
 
 function TransactionsList({ transactionsList, refreshData }) {
 
-    // ✅ НОВА ФУНКЦІЯ: Видалення транзакції в залежності від типу
+    // Видалення транзакції в залежності від типу
     const deleteTransaction = async (transaction) => {
         try {
             console.log('Deleting transaction:', transaction); // Для дебагу
@@ -50,29 +50,29 @@ function TransactionsList({ transactionsList, refreshData }) {
         }
     }
 
-    // ✅ ФУНКЦІЯ: Отримання іконки транзакції
+    // Отримання іконки транзакції
     const getTransactionIcon = (transaction) => {
         return transaction.type === 'income' ?
             <ArrowUp className="w-4 h-4 text-green-600" /> :
             <ArrowDown className="w-4 h-4 text-red-600" />
     }
 
-    // ✅ ФУНКЦІЯ: Стилі для суми
+    // Стилі для суми
     const getAmountStyle = (transaction) => {
         return transaction.type === 'income' ?
             'text-green-600 font-semibold' :
             'text-red-600 font-semibold'
     }
 
-    // ✅ ФУНКЦІЯ: Форматування суми
+    // Форматування суми
     const formatAmount = (transaction) => {
         const amount = parseFloat(transaction.amount)
         return transaction.type === 'income' ?
-            `+$${amount.toFixed(2)}` :
-            `-$${amount.toFixed(2)}`
+            `+₴${amount.toFixed(2)}` :
+            `-₴${amount.toFixed(2)}`
     }
 
-    // ✅ ФУНКЦІЯ: Отримання типу транзакції для відображення
+    // Отримання типу транзакції для відображення
     const getTransactionTypeLabel = (transaction) => {
         return transaction.type === 'income' ? 'Дохід' : 'Витрата'
     }

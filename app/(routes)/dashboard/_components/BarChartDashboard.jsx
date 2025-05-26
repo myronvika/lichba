@@ -48,9 +48,8 @@ export default function BarChartDashboard({ budgetList }) {
 
     return (
         <div className="border rounded-lg p-5">
-            <h2 className="font-bold text-lg mb-3">Activity</h2>
+            <h2 className="font-bold text-lg mb-3">Активність</h2>
 
-            {/* 6) Дропдаун с мультивыбором */}
             <div ref={ref} className="relative inline-block mb-4">
                 <button
                     onClick={() => setOpen(o => !o)}
@@ -78,7 +77,6 @@ export default function BarChartDashboard({ budgetList }) {
                 )}
             </div>
 
-            {/* 7) Диаграмма по выбранным бюджетам */}
             <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={data} margin={{ top: 7 }}>
                     <XAxis dataKey="name" />
