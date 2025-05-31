@@ -1,3 +1,4 @@
+
 // BarChartDashboard.jsx
 import React, { useState, useMemo, useRef, useEffect } from 'react'
 import {
@@ -38,11 +39,20 @@ export default function BarChartDashboard({ budgetList }) {
         () =>
             budgetList
                 .filter(item => selectedIds.includes(item.id))
-                .map(item => ({
-                    name:       item.name,
-                    totalSpend: item.totalSpend,
-                    amount:     item.amount,
-                })),
+                .map(item => {
+                    const originalAmount = parseFloat(item.amount) || 0;
+                    const totalSpend = item.totalSpend || 0;
+                    const totalIncome = item.totalIncome || 0;
+
+                    // Поточний залишок = початковий бюджет + доходи - витрати
+                    const currentBalance = originalAmount + totalIncome - totalSpend;
+
+                    return {
+                        name: item.name,
+                        'Сума конверта': originalAmount, // Більший стовпчик (тільки початкова сума)
+                        'Залишок': Math.max(0, currentBalance), // Менший стовпчик (те що залишилось)
+                    };
+                }),
         [budgetList, selectedIds]
     )
 
@@ -81,10 +91,23 @@ export default function BarChartDashboard({ budgetList }) {
                 <BarChart data={data} margin={{ top: 7 }}>
                     <XAxis dataKey="name" />
                     <YAxis />
-                    <Tooltip />
+                    <Tooltip
+                        formatter={(value, name) => [
+                            `${parseFloat(value).toFixed(2)}₴`,
+                            name
+                        ]}
+                    />
                     <Legend />
-                    <Bar dataKey="totalSpend" stackId="a" fill="#4845d2" />
-                    <Bar dataKey="amount"     stackId="a" fill="#C3C2FF" />
+                    <Bar
+                        dataKey="Сума конверта"
+                        fill="#C3C2FF"
+                        name="Сума конверта"
+                    />
+                    <Bar
+                        dataKey="Залишок"
+                        fill="#4845d2"
+                        name="Залишок в конверті"
+                    />
                 </BarChart>
             </ResponsiveContainer>
         </div>

@@ -3,14 +3,16 @@
 
 import { SignIn } from '@clerk/nextjs'
 
+// Компонент сторінки для входу користувача
 export default function Page() {
     return (
         <section className="bg-white">
             <div className="lg:grid lg:min-h-screen lg:grid-cols-12">
+                {/* Блок з фоновим зображенням та привітанням */}
                 <section className="relative flex h-32 items-end bg-gray-900 lg:col-span-5 lg:h-full xl:col-span-6">
                     <img
                         alt="Фон для входу"
-                        src="/auth-signin.jpg"
+                        src="/111.png"
                         className="absolute inset-0 h-full w-full object-cover opacity-80"
                     />
 
@@ -27,6 +29,7 @@ export default function Page() {
                     </div>
                 </section>
 
+                {/* Основний блок з компонентом SignIn */}
                 <main className="flex items-center justify-center px-8 py-8 sm:px-12 lg:col-span-7 lg:px-16 lg:py-12 xl:col-span-6">
                     <SignIn routing="path" path="/sign-in" signUpUrl="/sign-up" />
                 </main>

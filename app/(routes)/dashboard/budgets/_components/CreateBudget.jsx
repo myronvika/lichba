@@ -1,15 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import {
-    Dialog,
-    DialogClose,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from "@/components/ui/dialog";
+import {Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger,} from "@/components/ui/dialog";
 import EmojiPicker from "emoji-picker-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -25,6 +16,7 @@ function CreateBudget({ refreshData }) {
     const [amount, setAmount] = useState("");
     const { user } = useUser();
 
+    // Функція створення нового конверта у БД
     const onCreateBudget = async () => {
         const email = user?.primaryEmailAddress?.emailAddress;
         if (!email) {
@@ -33,6 +25,7 @@ function CreateBudget({ refreshData }) {
         }
 
         try {
+            // Вставка нового запису в таблицю Budgets
             const result = await db
                 .insert(Budgets)
                 .values({
@@ -71,7 +64,7 @@ function CreateBudget({ refreshData }) {
                         </DialogDescription>
                     </DialogHeader>
 
-                    {/* Весь інший контент - поза <DialogDescription> */}
+                    {/* Контент форми створення */}
                     <div className="mt-5">
                         <Button
                             variant="outline"
@@ -95,7 +88,7 @@ function CreateBudget({ refreshData }) {
                         )}
 
                         <div className="mt-4">
-                            <label className="text-black font-medium my-1 block">Budget Name</label>
+                            <label className="text-black font-medium my-1 block">Назва конверту</label>
                             <Input
                                 placeholder="напр. Відпочинок"
                                 onChange={(e) => setName(e.target.value)}
@@ -113,13 +106,14 @@ function CreateBudget({ refreshData }) {
                     </div>
 
                     <DialogFooter className="sm:justify-start">
+                        {/* Кнопка створення, активна тільки якщо введені назва та сума */}
                         <DialogClose asChild>
                             <Button
                                 disabled={!(name && amount)}
                                 onClick={onCreateBudget}
                                 className="mt-5 w-full"
                             >
-                                Create Budget
+                                Створити конверт
                             </Button>
                         </DialogClose>
                     </DialogFooter>

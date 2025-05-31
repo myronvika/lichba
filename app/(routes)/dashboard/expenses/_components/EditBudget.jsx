@@ -2,16 +2,7 @@
 import { Button } from '@/components/ui/button'
 import { PenBox } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
-import {
-    Dialog,
-    DialogClose,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from "@/components/ui/dialog"
+import {Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger,} from "@/components/ui/dialog"
 import EmojiPicker from 'emoji-picker-react'
 import { useUser } from '@clerk/nextjs'
 import { Input } from '@/components/ui/input'
@@ -21,9 +12,9 @@ import { eq } from 'drizzle-orm'
 import { toast } from 'sonner'
 
 function EditBudget({ budgetInfo, refreshData }) {
+    // Змінні стану для емодзі, назви та суми конверта
     const [emojiIcon, setEmojiIcon] = useState(budgetInfo?.icon || '😀');
     const [openEmojiPicker, setOpenEmojiPicker] = useState(false);
-
     const [name, setName] = useState('');
     const [amount, setAmount] = useState('');
 
@@ -37,6 +28,7 @@ function EditBudget({ budgetInfo, refreshData }) {
         }
     }, [budgetInfo])
 
+    // Функція оновлення конверта у базі даних
     const onUpdateBudget = async () => {
         const result = await db.update(Budgets).set({
             name: name,

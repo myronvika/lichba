@@ -13,9 +13,11 @@ export default function DashboardLayout({ children }) {
     const router = useRouter()
 
     useEffect(() => {
+        // Після того, як користувач авторизувався, перевіряємо, чи є в нього конверти
         if (user) checkUserBudgets()
     }, [user])
 
+    // Отримуємо всі конверти, створені цим користувачем
     const checkUserBudgets = async () => {
         const result = await db
             .select()

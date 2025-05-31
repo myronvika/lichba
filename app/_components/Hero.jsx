@@ -29,7 +29,7 @@ export default function Hero() {
             </div>
             <div className="w-full overflow-hidden">
                 <Image
-                    src="/dashboard.png"
+                    src="/screen.png"
                     alt="Попередній перегляд дашборда"
                     width={1200}
                     height={700}

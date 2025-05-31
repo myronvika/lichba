@@ -23,13 +23,12 @@ function IncomeScreen() {
     const [totalIncome, setTotalIncome] = useState(0);
     const { user } = useUser();
 
+    // Після автентифікації викликаємо завантаження всіх доходів
     useEffect(() => {
         user && getAllIncome();
     }, [user])
 
-    /**
-     * Отримуємо всі записи доходів користувача
-     */
+    //Отримуємо всі записи доходів користувача
     const getAllIncome = async() => {
         const result = await db.select({
             id: Income.id,
@@ -51,9 +50,7 @@ function IncomeScreen() {
         setTotalIncome(total);
     }
 
-    /**
-     * Видаляємо запис доходу та знімаємо гроші з конверта
-     */
+    //Видаляємо запис доходу та знімаємо гроші з конверта
     const deleteIncome = async (income) => {
         try {
             // Знімаємо гроші з бюджету при видаленні доходу
@@ -128,7 +125,6 @@ function IncomeScreen() {
                                 key={income.id}
                                 className='p-4 hover:bg-green-50 transition-colors'
                             >
-                                {/* ✅ ФІКСОВАНА СІТКА З ВИЗНАЧЕНИМИ ШИРИНАМИ КОЛОНОК */}
                                 <div className='grid grid-cols-12 gap-4 items-center'>
                                     {/* Інформація про конверт - 3 колонки */}
                                     <div className='col-span-3 flex items-center gap-2'>
@@ -206,4 +202,4 @@ function IncomeScreen() {
     )
 }
 
-export default IncomeScreen;
+export default IncomeScreen

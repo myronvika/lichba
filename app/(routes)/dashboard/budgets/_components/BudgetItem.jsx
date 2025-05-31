@@ -3,7 +3,7 @@ import React from 'react'
 
 function BudgetItem({ budget }) {
 
-    // Розраховуємо поточний залишок
+    // Обчислюємо поточний залишок бюджету
     const calculateCurrentBalance = () => {
         const originalAmount = parseFloat(budget.amount) || 0;
         const totalSpend = budget.totalSpend || 0;
@@ -13,7 +13,7 @@ function BudgetItem({ budget }) {
         return originalAmount + totalIncome - totalSpend;
     };
 
-    // Розраховуємо відсоток залишку (а не витрат)
+    // Розрахунок відсотка залишку від загальної доступної суми
     const calculateBalancePercentage = () => {
         const currentBalance = calculateCurrentBalance();
         const originalAmount = parseFloat(budget.amount) || 0;
@@ -70,7 +70,6 @@ function BudgetItem({ budget }) {
 
                 <div className='mt-5'>
                     <div className='flex items-center justify-between mb-3'>
-                        {/*/!* ✅ ДОДАНО: Показуємо витрачену суму *!/*/}
                         {/*<h2 className='text-xs text-slate-400'>*/}
                         {/*    {budget.totalSpend?.toFixed(2) || '0.00'}₴ витрачено*/}
                         {/*</h2>*/}
@@ -80,8 +79,6 @@ function BudgetItem({ budget }) {
                             {currentBalance.toFixed(2)}₴ залишилось
                         </h2>
                     </div>
-
-                    {/*/!* ✅ ДОДАНО: Показуємо доходи якщо вони є *!/*/}
                     {/*{budget.totalIncome > 0 && (*/}
                     {/*    <div className='flex items-center justify-center mb-2'>*/}
                     {/*        <span className='text-xs text-green-600 font-medium'>*/}
@@ -90,7 +87,7 @@ function BudgetItem({ budget }) {
                     {/*    </div>*/}
                     {/*)}*/}
 
-                    {/* ✅ ВИПРАВЛЕНО: Прогрес бар показує залишок коштів */}
+                    {/* Прогрес бар показує залишок коштів */}
                     <div className='w-full bg-slate-300 h-2 rounded-full relative'>
                         <div
                             className={`h-2 rounded-full transition-all duration-300 ${getProgressColor()}`}
@@ -98,7 +95,6 @@ function BudgetItem({ budget }) {
                                 width: `${balancePercentage}%`
                             }}
                         />
-                        {/* ✅ ДОДАНО: Показуємо відсоток для кращого розуміння */}
                         {/*<div className='text-center mt-1'>*/}
                         {/*    <span className='text-xs text-gray-500'>*/}
                         {/*        {balancePercentage.toFixed(0)}% залишилось*/}

@@ -5,6 +5,7 @@ import { UserButton } from '@clerk/nextjs';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 
+// Бічна навігація для дашборду
 function SideNav() {
     const menuList=[
         {

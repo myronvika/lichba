@@ -9,7 +9,7 @@ import { toast } from 'sonner'
 function IncomeExpenseList({ budgetId, incomeList, expensesList, refreshData }) {
 
     const deleteExpense = async (expense) => {
-        // ✅ ЗАЛИШИЛИ ТІЛЬКИ ВИДАЛЕННЯ EXPENSE
+        // Видалити запис витрати
         const result = await db.delete(Expenses)
             .where(eq(Expenses.id, expense.id))
             .returning()
@@ -21,7 +21,7 @@ function IncomeExpenseList({ budgetId, incomeList, expensesList, refreshData }) 
     }
 
     const deleteIncome = async (income) => {
-        // ✅ ЗАЛИШИЛИ ТІЛЬКИ ВИДАЛЕННЯ INCOME
+        // Видалити запис доходу
         const result = await db.delete(Income)
             .where(eq(Income.id, income.id))
             .returning()
@@ -32,13 +32,11 @@ function IncomeExpenseList({ budgetId, incomeList, expensesList, refreshData }) 
         }
     }
 
-    // Правильне сортування за датою створення
+    // Об'єднати списки доходів і витрат та відсортувати за датою (новіші зверху)
     const allTransactions = [
         ...incomeList.map(item => ({ ...item, type: 'income' })),
         ...expensesList.map(item => ({ ...item, type: 'expense' }))
     ].sort((a, b) => {
-        // Конвертуємо дати у формат для порівняння
-        // Припускаємо формат DD/MM/YYYY
         const parseDate = (dateStr) => {
             const [day, month, year] = dateStr.split('/');
             return new Date(year, month - 1, day);
@@ -47,12 +45,10 @@ function IncomeExpenseList({ budgetId, incomeList, expensesList, refreshData }) 
         const dateA = parseDate(a.createdAt);
         const dateB = parseDate(b.createdAt);
 
-        // Сортуємо за датою (новіші спочатку)
         if (dateA.getTime() !== dateB.getTime()) {
             return dateB.getTime() - dateA.getTime();
         }
 
-        // Якщо дати однакові, сортуємо за ID (новіші спочатку)
         return b.id - a.id;
     });
 

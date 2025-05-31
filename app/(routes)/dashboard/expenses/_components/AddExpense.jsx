@@ -17,9 +17,7 @@ function AddExpense({ budgetId, user, refreshData }) {
     const [incomeAnimation, setIncomeAnimation] = useState(false);
     const [expenseAnimation, setExpenseAnimation] = useState(false);
 
-    /**
-     * Розрахунок поточного балансу конверта
-     */
+    //Розрахунок поточного балансу конверта
     const getCurrentBalance = async (budgetId) => {
         try {
             // Отримуємо початковий бюджет
@@ -58,9 +56,7 @@ function AddExpense({ budgetId, user, refreshData }) {
         }
     };
 
-    /**
-     * Додавання грошей до конверта
-     */
+    //Додавання грошей до конверта
     const addMoneyToEnvelope = async () => {
         setLoading(true);
         setIncomeAnimation(true);
@@ -114,9 +110,7 @@ function AddExpense({ budgetId, user, refreshData }) {
         setLoading(false);
     };
 
-    /**
-     * Додавання нової витрати
-     */
+    //Додавання нової витрати
     const addNewExpense = async () => {
         setLoading(true);
         setExpenseAnimation(true);

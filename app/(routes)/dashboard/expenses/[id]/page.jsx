@@ -9,17 +9,7 @@ import AddExpense from '../_components/AddExpense';
 import IncomeExpenseList from '../_components/IncomeExpenseList';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Trash } from 'lucide-react';
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+import {AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,} from "@/components/ui/alert-dialog";
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import EditBudget from '../_components/EditBudget';
@@ -36,10 +26,10 @@ function ExpensesScreen({ params }) {
         user && getBudgetInfo();
     }, [user]);
 
-    // Додано отримання totalIncome
+    // Завантажуємо інформацію про конверт: загальні витрати, доходи і кількість
     const getBudgetInfo = async () => {
         try {
-            // Отримуємо бюджет з витратами
+            // Отримуємо конверт з агрегацією витрат
             const result = await db.select({
                 ...getTableColumns(Budgets),
                 totalSpend: sql`COALESCE(sum(${Expenses.amount}), 0)`.mapWith(Number),
@@ -56,7 +46,7 @@ function ExpensesScreen({ params }) {
                 return;
             }
 
-            // Окремо отримуємо доходи
+            // Отримуємо сумарний дохід окремо
             const incomeData = await db.select({
                 totalIncome: sql`COALESCE(sum(${Income.amount}), 0)`.mapWith(Number)
             }).from(Income)
@@ -78,6 +68,7 @@ function ExpensesScreen({ params }) {
         }
     }
 
+    // Завантажуємо список витрат для конверта
     const getExpensesList = async () => {
         try {
             const result = await db.select().from(Expenses)
@@ -89,6 +80,7 @@ function ExpensesScreen({ params }) {
         }
     }
 
+    // Завантажуємо список доходів для конверта
     const getIncomeList = async () => {
         try {
             const result = await db.select().from(Income)
@@ -100,6 +92,7 @@ function ExpensesScreen({ params }) {
         }
     }
 
+    // Видалення конверта разом з усіма доходами і витратами
     const deleteBudget = async () => {
         try {
             // Видаляємо всі доходи
@@ -127,7 +120,7 @@ function ExpensesScreen({ params }) {
             <h2 className='text-2xl font-bold gap-2 flex justify-between items-center'>
                 <span className='flex gap-2 items-center'>
                     <ArrowLeft onClick={() => route.back()} className='cursor-pointer' />
-                    My Envelope Details
+                    Деталі конверта
                 </span>
                 <div className='flex gap-2 items-center'>
                     <EditBudget budgetInfo={budgetInfo} refreshData={() => getBudgetInfo()} />

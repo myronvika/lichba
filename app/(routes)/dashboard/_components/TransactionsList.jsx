@@ -7,8 +7,7 @@ import React from 'react'
 import { toast } from 'sonner'
 
 function TransactionsList({ transactionsList, refreshData }) {
-
-    // Видалення транзакції в залежності від типу
+    // Видалення транзакції (витрата або дохід) з бази
     const deleteTransaction = async (transaction) => {
         try {
             console.log('Deleting transaction:', transaction); // Для дебагу
@@ -50,21 +49,21 @@ function TransactionsList({ transactionsList, refreshData }) {
         }
     }
 
-    // Отримання іконки транзакції
+    // Повертає іконку для транзакції: стрілка вгору для доходу, вниз для витрати
     const getTransactionIcon = (transaction) => {
         return transaction.type === 'income' ?
             <ArrowUp className="w-4 h-4 text-green-600" /> :
             <ArrowDown className="w-4 h-4 text-red-600" />
     }
 
-    // Стилі для суми
+    // Клас для стилю суми залежно від типу транзакції
     const getAmountStyle = (transaction) => {
         return transaction.type === 'income' ?
             'text-green-600 font-semibold' :
             'text-red-600 font-semibold'
     }
 
-    // Форматування суми
+    // Форматує суму з відповідним знаком + або -
     const formatAmount = (transaction) => {
         const amount = parseFloat(transaction.amount)
         return transaction.type === 'income' ?

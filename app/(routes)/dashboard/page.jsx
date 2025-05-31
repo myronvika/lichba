@@ -14,11 +14,9 @@ import TransactionsList from './_components/TransactionsList'
 export default function Dashboard() {
     const { user } = useUser()
 
-    // ВСІ бюджети для фільтра у Activity
+    // Всі бюджети для фільтрації у графіку активності
     const [budgetList, setBudgetList] = useState([])
-    // Останні 4 бюджети для секції Останні Конверти
     const [latestBudgets, setLatestBudgets] = useState([])
-    // ✅ ЗМІНЕНО: Останні 10 транзакцій (доходи + витрати)
     const [transactionsList, setTransactionsList] = useState([])
 
     useEffect(() => {
@@ -67,7 +65,7 @@ export default function Dashboard() {
         }
     }
 
-    // ✅ НОВА ФУНКЦІЯ: Завантажуємо всі типи транзакцій
+    // Завантажуємо всі типи транзакцій
     const getAllTransactions = async () => {
         try {
             // Отримуємо витрати

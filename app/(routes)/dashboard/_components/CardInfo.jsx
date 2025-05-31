@@ -2,11 +2,13 @@
 import { PiggyBank, ReceiptText, Wallet } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
 
+// Компонент для відображення загальної інформації по бюджетах
 function CardInfo({ budgetList }) {
     const [totalBudget, setTotalBudget] = useState(0);
     const [totalSpend, setTotalSpend] = useState(0);
 
     useEffect(() => {
+        // Обчислюємо показники при зміні списку бюджетів
         budgetList && CalculateCardInfo();
     }, [budgetList]);
 
@@ -14,6 +16,7 @@ function CardInfo({ budgetList }) {
         let totalBudget_ = 0;
         let totalSpend_ = 0;
 
+        // Підсумовуємо значення з кожного бюджету
         budgetList.forEach(element => {
             totalBudget_ += Number(element.amount);
             totalSpend_ += element.totalSpend;

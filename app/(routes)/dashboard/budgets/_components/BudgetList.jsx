@@ -12,15 +12,14 @@ function BudgetList() {
     const { user } = useUser();
 
     useEffect(() => {
+        // Отримаємо конверти після завантаження користувача
         user && getBudgetList();
     }, [user])
 
-    /**
-     * Отримуємо список бюджетів з правильним підрахунком доходів та витрат
-     */
+    //Завантажує список конвертів з підрахунком витрат та доходів
     const getBudgetList = async () => {
         try {
-            // Спочатку отримуємо основну інформацію про бюджети з витратами
+            // Дані конвертів зі зведеними витратами та кількістю елементів
             const budgetsWithExpenses = await db.select({
                 ...getTableColumns(Budgets),
                 totalSpend: sql`COALESCE(sum(${Expenses.amount}), 0)`.mapWith(Number),
@@ -31,7 +30,7 @@ function BudgetList() {
                 .groupBy(Budgets.id)
                 .orderBy(desc(Budgets.id));
 
-            // Окремо отримуємо доходи для кожного бюджету
+            // Дані про доходи для кожного конверта
             const incomeData = await db.select({
                 budgetId: Income.budgetId,
                 totalIncome: sql`COALESCE(sum(${Income.amount}), 0)`.mapWith(Number)
@@ -40,7 +39,7 @@ function BudgetList() {
                 .where(eq(Budgets.createdBy, user?.primaryEmailAddress?.emailAddress))
                 .groupBy(Income.budgetId);
 
-            // Об'єднуємо дані
+            // Об'єднуємо доходи з витратами в один масив
             const result = budgetsWithExpenses.map(budget => {
                 const incomeForBudget = incomeData.find(income => income.budgetId === budget.id);
                 return {

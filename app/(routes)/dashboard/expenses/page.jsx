@@ -1,11 +1,11 @@
 "use client"
-import { db } from '@/utils/dbConfig';
-import { Budgets, Expenses } from '@/utils/schema';
-import { desc, eq } from 'drizzle-orm';
-import React, { useEffect, useState } from 'react';
-import { useUser } from '@clerk/nextjs';
-import { ReceiptText, Calendar, DollarSign, Trash2 } from 'lucide-react';
-import { toast } from 'sonner';
+import {db} from '@/utils/dbConfig';
+import {Budgets, Expenses} from '@/utils/schema';
+import {desc, eq} from 'drizzle-orm';
+import React, {useEffect, useState} from 'react';
+import {useUser} from '@clerk/nextjs';
+import {ReceiptText, Calendar, DollarSign, Trash2} from 'lucide-react';
+import {toast} from 'sonner';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -21,16 +21,15 @@ import {
 function ExpensesScreen() {
     const [expensesList, setExpensesList] = useState([]);
     const [totalExpenses, setTotalExpenses] = useState(0);
-    const { user } = useUser();
+    const {user} = useUser();
 
+    // Після автентифікації користувача завантажуємо всі витрати
     useEffect(() => {
         user && getAllExpenses();
     }, [user])
 
-    /**
-     * Отримуємо всі витрати користувача
-     */
-    const getAllExpenses = async() => {
+    //Отримуємо всі витрати користувача разом із даними про конверт
+    const getAllExpenses = async () => {
         const result = await db.select({
             id: Expenses.id,
             name: Expenses.name,
@@ -46,17 +45,12 @@ function ExpensesScreen() {
 
         setExpensesList(result);
 
-        // Розраховуємо загальні витрати
         const total = result.reduce((sum, expense) => sum + parseFloat(expense.amount), 0);
         setTotalExpenses(total);
     }
-
-    /**
-     * Видаляємо запис витрати та повертаємо гроші до конверта
-     */
+//Видаляємо запис витрати і повертаємо відповідну суму назад до конверта
     const deleteExpense = async (expense) => {
         try {
-            // Повертаємо гроші в бюджет при видаленні витрати
             const budgetCheck = await db
                 .select()
                 .from(Budgets)
@@ -69,7 +63,7 @@ function ExpensesScreen() {
                 const newBudgetAmount = currentAmount + parseFloat(expense.amount);
 
                 await db.update(Budgets)
-                    .set({ amount: newBudgetAmount.toString() })
+                    .set({amount: newBudgetAmount.toString()})
                     .where(eq(Budgets.id, expense.budgetId));
             }
 
@@ -84,7 +78,7 @@ function ExpensesScreen() {
             }
         } catch (error) {
             console.error('Помилка видалення витрати:', error);
-            toast('Помилка видалення запису витрати', { variant: 'error' });
+            toast('Помилка видалення запису витрати', {variant: 'error'});
         }
     }
 
@@ -92,7 +86,7 @@ function ExpensesScreen() {
         <div className='p-10'>
             <div className='flex items-center gap-3 mb-6'>
                 <div className='p-3 bg-red-100 rounded-full'>
-                    <ReceiptText className='w-8 h-8 text-red-600' />
+                    <ReceiptText className='w-8 h-8 text-red-600'/>
                 </div>
                 <div>
                     <h2 className='font-bold text-3xl text-gray-800'>Мої витрати</h2>
@@ -108,7 +102,7 @@ function ExpensesScreen() {
                         <p className='text-3xl font-bold'>₴{totalExpenses.toFixed(2)}</p>
                         <p className='text-sm opacity-90 mt-1'>{expensesList.length} записів витрат</p>
                     </div>
-                    <DollarSign className='w-16 h-16 opacity-20' />
+                    <DollarSign className='w-16 h-16 opacity-20'/>
                 </div>
             </div>
 
@@ -116,7 +110,7 @@ function ExpensesScreen() {
             <div className='bg-white rounded-lg shadow-sm border'>
                 <div className='p-4 border-b bg-gray-50 rounded-t-lg'>
                     <h2 className='font-bold text-lg flex items-center gap-2'>
-                        <Calendar className='w-5 h-5' />
+                        <Calendar className='w-5 h-5'/>
                         Історія витрат
                     </h2>
                 </div>
@@ -128,7 +122,6 @@ function ExpensesScreen() {
                                 key={expense.id}
                                 className='p-4 hover:bg-red-50 transition-colors'
                             >
-                                {/* ✅ ФІКСОВАНА СІТКА З ВИЗНАЧЕНИМИ ШИРИНАМИ КОЛОНОК */}
                                 <div className='grid grid-cols-12 gap-4 items-center'>
                                     {/* Інформація про конверт - 3 колонки */}
                                     <div className='col-span-3 flex items-center gap-2'>
@@ -139,38 +132,39 @@ function ExpensesScreen() {
                                         </div>
                                     </div>
 
-                                    {/* Деталі витрати - 4 колонки */}
                                     <div className='col-span-4 min-w-0'>
                                         <p className='font-medium text-gray-800 truncate'>{expense.name}</p>
                                         <p className='text-sm text-gray-500 flex items-center gap-1'>
-                                            <Calendar className='w-3 h-3 flex-shrink-0' />
+                                            <Calendar className='w-3 h-3 flex-shrink-0'/>
                                             <span className='truncate'>{expense.createdAt}</span>
                                         </p>
                                     </div>
 
-                                    {/* Сума - 3 колонки */}
                                     <div className='col-span-3 text-right'>
                                         <p className='text-xl font-bold text-red-600'>
                                             -₴{parseFloat(expense.amount).toFixed(2)}
                                         </p>
-                                        <span className='inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800'>
+                                        <span
+                                            className='inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800'>
                                             Витрачено з конверта
                                         </span>
                                     </div>
 
-                                    {/* Кнопка видалення - 2 колонки */}
                                     <div className='col-span-2 flex justify-center'>
                                         <AlertDialog>
                                             <AlertDialogTrigger asChild>
-                                                <button className='p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors'>
-                                                    <Trash2 className='w-4 h-4' />
+                                                <button
+                                                    className='p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors'>
+                                                    <Trash2 className='w-4 h-4'/>
                                                 </button>
                                             </AlertDialogTrigger>
                                             <AlertDialogContent>
                                                 <AlertDialogHeader>
                                                     <AlertDialogTitle>Видалити запис витрати?</AlertDialogTitle>
                                                     <AlertDialogDescription>
-                                                        Це видалить "{expense.name}" та поверне ₴{parseFloat(expense.amount).toFixed(2)} до вашого конверта "{expense.budgetName}". Цю дію не можна скасувати.
+                                                        Це видалить "{expense.name}" та поверне
+                                                        ₴{parseFloat(expense.amount).toFixed(2)} до вашого конверта
+                                                        "{expense.budgetName}". Цю дію не можна скасувати.
                                                     </AlertDialogDescription>
                                                 </AlertDialogHeader>
                                                 <AlertDialogFooter>
@@ -191,8 +185,9 @@ function ExpensesScreen() {
                     </div>
                 ) : (
                     <div className='p-12 text-center'>
-                        <div className='w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4'>
-                            <ReceiptText className='w-8 h-8 text-gray-400' />
+                        <div
+                            className='w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4'>
+                            <ReceiptText className='w-8 h-8 text-gray-400'/>
                         </div>
                         <h3 className='text-lg font-medium text-gray-800 mb-2'>Ще немає записів витрат</h3>
                         <p className='text-gray-500 max-w-md mx-auto'>
