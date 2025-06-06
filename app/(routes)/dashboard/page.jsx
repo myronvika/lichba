@@ -11,10 +11,29 @@ import BarChartDashboard from './_components/BarChartDashboard'
 import BudgetItem from './budgets/_components/BudgetItem'
 import TransactionsList from './_components/TransactionsList'
 
+// Мінімальний переклад імен
+function translateName(user) {
+    if (!user) return 'Користувач';
+
+    const names = {
+        'victoria': 'Вікторія', 'victor': 'Віктор', 'john': 'Іван', 'mary': 'Марія',
+        'mike': 'Михайло', 'alex': 'Олекс', 'anna': 'Анна', 'kate': 'Катя'
+    };
+
+    const name = user.firstName || user.fullName || 'Користувач';
+    const lowerName = name.toLowerCase();
+
+    for (const [eng, ukr] of Object.entries(names)) {
+        if (lowerName.includes(eng)) return ukr;
+    }
+
+    return name;
+}
+
 export default function Dashboard() {
     const { user } = useUser()
+    const translatedName = translateName(user)
 
-    // Всі бюджети для фільтрації у графіку активності
     const [budgetList, setBudgetList] = useState([])
     const [latestBudgets, setLatestBudgets] = useState([])
     const [transactionsList, setTransactionsList] = useState([])
@@ -23,10 +42,8 @@ export default function Dashboard() {
         if (user) getBudgetList()
     }, [user])
 
-    // Завантажуємо всі бюджети + відбираємо останні 4
     const getBudgetList = async () => {
         try {
-            // Отримуємо бюджети з витратами
             const budgetsWithExpenses = await db
                 .select({
                     ...getTableColumns(Budgets),
@@ -39,7 +56,6 @@ export default function Dashboard() {
                 .groupBy(Budgets.id)
                 .orderBy(desc(Budgets.id))
 
-            // Окремо отримуємо доходи для кожного бюджету
             const incomeData = await db.select({
                 budgetId: Income.budgetId,
                 totalIncome: sql`COALESCE(sum(${Income.amount}), 0)`.mapWith(Number)
@@ -48,7 +64,6 @@ export default function Dashboard() {
                 .where(eq(Budgets.createdBy, user.primaryEmailAddress.emailAddress))
                 .groupBy(Income.budgetId);
 
-            // Об'єднуємо дані
             const result = budgetsWithExpenses.map(budget => {
                 const incomeForBudget = incomeData.find(income => income.budgetId === budget.id);
                 return {
@@ -65,10 +80,8 @@ export default function Dashboard() {
         }
     }
 
-    // Завантажуємо всі типи транзакцій
     const getAllTransactions = async () => {
         try {
-            // Отримуємо витрати
             const expenses = await db
                 .select({
                     id: Expenses.id,
@@ -84,7 +97,6 @@ export default function Dashboard() {
                 .where(eq(Budgets.createdBy, user.primaryEmailAddress.emailAddress))
                 .orderBy(desc(Expenses.id))
 
-            // Отримуємо доходи
             const income = await db
                 .select({
                     id: Income.id,
@@ -100,7 +112,6 @@ export default function Dashboard() {
                 .where(eq(Budgets.createdBy, user.primaryEmailAddress.emailAddress))
                 .orderBy(desc(Income.id))
 
-            // Додаємо тип до кожної транзакції в JavaScript
             const expensesWithType = expenses.map(expense => ({
                 ...expense,
                 type: 'expense'
@@ -111,11 +122,8 @@ export default function Dashboard() {
                 type: 'income'
             }));
 
-            // Об'єднуємо всі транзакції та сортуємо за датою створення
             const allTransactions = [...expensesWithType, ...incomeWithType]
                 .sort((a, b) => {
-                    // Конвертуємо дати у формат для порівняння
-                    // Припускаємо формат DD/MM/YYYY
                     const parseDate = (dateStr) => {
                         const [day, month, year] = dateStr.split('/');
                         return new Date(year, month - 1, day);
@@ -124,17 +132,14 @@ export default function Dashboard() {
                     const dateA = parseDate(a.createdAt);
                     const dateB = parseDate(b.createdAt);
 
-                    // Сортуємо за датою (новіші спочатку)
                     if (dateA.getTime() !== dateB.getTime()) {
                         return dateB.getTime() - dateA.getTime();
                     }
 
-                    // Якщо дати однакові, сортуємо за ID (новіші спочатку)
                     return b.id - a.id;
                 })
-                .slice(0, 10) // Беремо останні 10 транзакцій
+                .slice(0, 10)
 
-            console.log('Всі транзакції:', allTransactions); // Для дебагу
             setTransactionsList(allTransactions)
         } catch (error) {
             console.error('Помилка завантаження транзакцій:', error)
@@ -143,7 +148,7 @@ export default function Dashboard() {
 
     return (
         <div className="p-8">
-            <h2 className="font-bold text-4xl">Привіт, {user?.fullName} ✌️</h2>
+            <h2 className="font-bold text-4xl">Привіт, {translatedName} ✌️</h2>
             <p className="text-gray-500 mb-8">
                 Ось що відбувається з вашими фінансами. Давайте керувати вашими витратами!
             </p>
@@ -151,7 +156,6 @@ export default function Dashboard() {
             <CardInfo budgetList={budgetList} />
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 mt-6">
-                {/* Активність + Останні Транзакції */}
                 <div className="lg:col-span-2 space-y-6">
                     <BarChartDashboard budgetList={budgetList} />
                     <TransactionsList
@@ -160,7 +164,6 @@ export default function Dashboard() {
                     />
                 </div>
 
-                {/* Останні Конверти (тільки 4) */}
                 <div className="space-y-4">
                     <h2 className="font-bold text-lg">Останні конверти</h2>
                     {latestBudgets.length > 0 ? (
